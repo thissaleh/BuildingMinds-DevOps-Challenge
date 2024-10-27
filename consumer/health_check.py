@@ -5,7 +5,7 @@ import base64
 from kafka import KafkaConsumer
 from kubernetes import client, config
 
-### Kafka broker and topic information
+# Kafka broker and topic information
 KAFKA_BROKER = "kafka.default.svc.cluster.local:9092"
 KAFKA_TOPIC = "posts"
 KAFKA_USERNAME = "user1"
