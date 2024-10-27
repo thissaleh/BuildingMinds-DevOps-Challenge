@@ -1,0 +1,17 @@
+# Start from a Python base image
+FROM python:3.8-slim
+
+# Copy the producer script to the container
+COPY producer.py .
+
+# Install the Kafka Python client library
+RUN python -m pip install --upgrade pip
+RUN python -m pip install kafka-python kubernetes
+#RUN apt update && apt install -y netcat-openbsd dnsutils
+# Set the command to run the producer
+CMD ["python", "producer.py"]
+
+# Set the command to run a shell, allowing manual script execution
+#CMD ["/bin/bash"]
+
+#CMD ["sleep", "infinity"]
