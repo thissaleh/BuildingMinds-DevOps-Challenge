@@ -157,7 +157,7 @@ resource "helm_release" "kafka_producer" {
   timeout   = 600 
 
 }
-
+###
 resource "helm_release" "kafka_consumer" {
   name       = "kafka-consumer"
   #namespace  = kubernetes_namespace.kafka_ns.metadata[0].name
