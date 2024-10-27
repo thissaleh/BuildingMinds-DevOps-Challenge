@@ -2,17 +2,20 @@ name: Deploy to Azure AKS using Terraform
 
 on:
   push:
+    branches:
+      - non-existent-branch # Please change branch when Azure login credentials are ready
     paths:
       - 'infra/terraform/**'
   pull_request:
+    branches:
+      - non-existent-branch # Please change branch when Azure login credentials are ready
     paths:
       - 'infra/terraform/**'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ secrets.AZURE_CLIENT_ID && secrets.AZURE_TENANT_ID && secrets.AZURE_SUBSCRIPTION_ID && secrets.AZURE_CLIENT_SECRET }}
-
+  
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.2.2 
