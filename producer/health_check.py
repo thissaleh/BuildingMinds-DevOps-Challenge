@@ -13,7 +13,7 @@ KAFKA_USERNAME = "user1"
 SECRET_NAME = "kafka-user-passwords"
 NAMESPACE = "default"
 
-# Load Kubernetes in-cluster configuration
+## Load Kubernetes in-cluster configuration
 config.load_incluster_config()
 v1 = client.CoreV1Api()
 

@@ -630,7 +630,15 @@ controller:
   ##     cpu: 3
   ##     memory: 1024Mi
   ##
-  resources: {}
+  resources:
+    limits:
+      cpu: 2
+      memory: 4Gi
+      ephemeral-storage: 2Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+      ephemeral-storage: 50Mi
   ## Kafka pods' Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param controller.podSecurityContext.enabled Enable security context for the pods
@@ -818,21 +826,21 @@ controller:
     vpa:
       ## @param controller.autoscaling.vpa.enabled Enable VPA
       ##
-      enabled: false
+      enabled: true
       ## @param controller.autoscaling.vpa.annotations Annotations for VPA resource
       ##
       annotations: {}
       ## @param controller.autoscaling.vpa.controlledResources VPA List of resources that the vertical pod autoscaler can control. Defaults to cpu and memory
       ##
-      controlledResources: []
-      ## @param controller.autoscaling.vpa.maxAllowed VPA Max allowed resources for the pod
-      ## cpu: 200m
-      ## memory: 100Mi
-      maxAllowed: {}
-      ## @param controller.autoscaling.vpa.minAllowed VPA Min allowed resources for the pod
-      ## cpu: 200m
-      ## memory: 100Mi
-      minAllowed: {}
+      controlledResources:
+        - cpu
+        - memory      
+      maxAllowed:
+        cpu: 2    
+        memory: 4Gi   
+      minAllowed:
+        cpu: 500m     
+        memory: 512Mi  
       updatePolicy:
         ## @param controller.autoscaling.vpa.updatePolicy.updateMode Autoscaling update policy Specifies whether recommended updates are applied when a Pod is started and whether recommended updates are applied during the life of a Pod
         ## Possible values are "Off", "Initial", "Recreate", and "Auto".
@@ -841,19 +849,19 @@ controller:
     hpa:
       ## @param controller.autoscaling.hpa.enabled Enable HPA for Kafka Controller
       ##
-      enabled: false
+      enabled: true
       ## @param controller.autoscaling.hpa.minReplicas Minimum number of Kafka Controller replicas
       ##
-      minReplicas: ""
+      minReplicas: 3
       ## @param controller.autoscaling.hpa.maxReplicas Maximum number of Kafka Controller replicas
       ##
-      maxReplicas: ""
+      maxReplicas: 6
       ## @param controller.autoscaling.hpa.targetCPU Target CPU utilization percentage
       ##
-      targetCPU: ""
+      targetCPU: 70
       ## @param controller.autoscaling.hpa.targetMemory Target Memory utilization percentage
       ##
-      targetMemory: ""
+      targetMemory: 80
   ## Kafka Pod Disruption Budget
   ## ref: https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
   ## @param controller.pdb.create Deploy a pdb object for the Kafka pod
@@ -862,7 +870,7 @@ controller:
   ##
   pdb:
     create: true
-    minAvailable: ""
+    minAvailable: 1
     maxUnavailable: ""
   ## Enable persistence using Persistent Volume Claims
   ## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/

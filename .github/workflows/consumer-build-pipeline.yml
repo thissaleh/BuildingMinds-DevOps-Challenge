@@ -47,6 +47,7 @@ jobs:
         with:
           context: ./consumer
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: ${{ env.IMAGE_NAME }}:latest
           cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:cache
           cache-to: type=inline
