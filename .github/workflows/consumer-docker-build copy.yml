@@ -32,6 +32,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
-          context: ./consumer  # Path to Kafka producer Dockerfile
+          context: ./consumer  # Path to Kafka consumer Dockerfile
           push: true
           tags: ${{ env.IMAGE_NAME }}:latest
+          cache-from: type=registry,ref=${{ env.IMAGE_NAME }}:cache
+          cache-to: type=inline
