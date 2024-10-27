@@ -3,12 +3,12 @@ name: Deploy to Azure AKS using Terraform
 on:
   push:
     branches:
-      - non-existent-branch # Please change branch when Azure login credentials are ready
+      - non-existent-branch # Please change branch when Azure login credentials are available
     paths:
       - 'infra/terraform/**'
   pull_request:
     branches:
-      - non-existent-branch # Please change branch when Azure login credentials are ready
+      - non-existent-branch # Please change branch when Azure login credentials are available
     paths:
       - 'infra/terraform/**'
 

@@ -836,8 +836,8 @@ controller:
         - cpu
         - memory      
       maxAllowed:
-        cpu: 2    
-        memory: 4Gi   
+        cpu: 1    
+        memory: 2Gi   
       minAllowed:
         cpu: 500m     
         memory: 512Mi  
@@ -852,10 +852,10 @@ controller:
       enabled: true
       ## @param controller.autoscaling.hpa.minReplicas Minimum number of Kafka Controller replicas
       ##
-      minReplicas: 3
+      minReplicas: 2
       ## @param controller.autoscaling.hpa.maxReplicas Maximum number of Kafka Controller replicas
       ##
-      maxReplicas: 6
+      maxReplicas: 3
       ## @param controller.autoscaling.hpa.targetCPU Target CPU utilization percentage
       ##
       targetCPU: 70
@@ -868,10 +868,10 @@ controller:
   ## @param controller.pdb.minAvailable Minimum number/percentage of available Kafka replicas
   ## @param controller.pdb.maxUnavailable Maximum number/percentage of unavailable Kafka replicas
   ##
-  pdb:
-    create: true
-    minAvailable: 1
-    maxUnavailable: ""
+  # pdb:
+  #   create: true
+  #   minAvailable: 1
+  #   maxUnavailable: ""
   ## Enable persistence using Persistent Volume Claims
   ## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
   ##
@@ -1918,7 +1918,7 @@ metrics:
   jmx:
     ## @param metrics.jmx.enabled Whether or not to expose JMX metrics to Prometheus
     ##
-    enabled: false
+    enabled: true
     ## @param metrics.jmx.kafkaJmxPort JMX port where the exporter will collect metrics, exposed in the Kafka container.
     ##
     kafkaJmxPort: 5555
