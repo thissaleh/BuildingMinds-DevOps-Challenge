@@ -95,8 +95,8 @@ livenessProbe:
       - python
       - /app/health_check.py  # Adjust to the correct path if different
   initialDelaySeconds: 30
-  periodSeconds: 30
-  timeoutSeconds: 20
+  periodSeconds: 60
+  timeoutSeconds: 30
   failureThreshold: 6
 
 readinessProbe:
@@ -105,9 +105,9 @@ readinessProbe:
       - python
       - /app/health_check.py  # Adjust to the correct path if different
   initialDelaySeconds: 30
-  periodSeconds: 30
-  timeoutSeconds: 20
-  failureThreshold: 6    
+  periodSeconds: 60
+  timeoutSeconds: 30
+  failureThreshold: 10   
 
 # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
 autoscaling:

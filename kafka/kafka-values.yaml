@@ -630,15 +630,15 @@ controller:
   ##     cpu: 3
   ##     memory: 1024Mi
   ##
-  resources:
-    limits:
-      cpu: 2
-      memory: 4Gi
-      ephemeral-storage: 2Gi
-    requests:
-      cpu: 500m
-      memory: 512Mi
-      ephemeral-storage: 50Mi
+  # resources:
+  #   limits:
+  #     cpu: 2
+  #     memory: 4Gi
+  #     ephemeral-storage: 2Gi
+  #   requests:
+  #     cpu: 500m
+  #     memory: 512Mi
+  #     ephemeral-storage: 50Mi
   ## Kafka pods' Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param controller.podSecurityContext.enabled Enable security context for the pods
@@ -826,7 +826,7 @@ controller:
     vpa:
       ## @param controller.autoscaling.vpa.enabled Enable VPA
       ##
-      enabled: true
+      enabled: false
       ## @param controller.autoscaling.vpa.annotations Annotations for VPA resource
       ##
       annotations: {}
@@ -849,7 +849,7 @@ controller:
     hpa:
       ## @param controller.autoscaling.hpa.enabled Enable HPA for Kafka Controller
       ##
-      enabled: true
+      enabled: false
       ## @param controller.autoscaling.hpa.minReplicas Minimum number of Kafka Controller replicas
       ##
       minReplicas: 2
@@ -1918,7 +1918,7 @@ metrics:
   jmx:
     ## @param metrics.jmx.enabled Whether or not to expose JMX metrics to Prometheus
     ##
-    enabled: true
+    enabled: false
     ## @param metrics.jmx.kafkaJmxPort JMX port where the exporter will collect metrics, exposed in the Kafka container.
     ##
     kafkaJmxPort: 5555
@@ -2138,8 +2138,8 @@ provisioning:
   ##
   topics: 
     - name: "posts"
-      partitions: 3
-      replicationFactor: 2
+      partitions: 1
+      replicationFactor: 1
     - name: "blogs"
       partitions: 1
       replicationFactor: 1

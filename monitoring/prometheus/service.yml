@@ -2,11 +2,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kafka-jmx-metrics
-  namespace: default  # or your Kafka namespace
+  namespace: default  # Ensure this matches your Kafka namespace
+  labels:
+    app.kubernetes.io/name: kafka
 spec:
   ports:
-  - name: metrics
-    port: 5556
-    targetPort: 5556
+    - name: metrics
+      port: 5556
+      targetPort: 5556
   selector:
     app.kubernetes.io/name: kafka

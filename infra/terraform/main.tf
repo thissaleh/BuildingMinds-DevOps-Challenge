@@ -132,8 +132,103 @@ resource "kubernetes_role_binding" "kafka_secret_role_binding" {
   }
 }
 
+# resource "kubernetes_manifest" "kafka_jmx_service_monitor" {
+#   manifest = {
+#     "apiVersion" = "monitoring.coreos.com/v1"
+#     "kind"       = "ServiceMonitor"
+#     "metadata" = {
+#       "name"      = "kafka-jmx"
+#       "namespace" = "default"
+#     }
+#     "spec" = {
+#       "selector" = {
+#         "matchLabels" = {
+#           "app.kubernetes.io/name" = "kafka"
+#         }
+#       }
+#       "endpoints" = [
+#         {
+#           "port"     = "metrics"
+#           "path"     = "/metrics"
+#           "interval" = "15s"
+#         }
+#       ]
+#     }
+#   }
+# }
+
+# resource "kubernetes_service" "kafka_jmx_metrics" {
+#   metadata {
+#     name      = "kafka-jmx-metrics"
+#     namespace = "default"  # Ensure this matches your Kafka namespace
+#     labels = {
+#       "app.kubernetes.io/name" = "kafka"
+#     }
+#   }
+#   spec {
+#     selector = {
+#       "app.kubernetes.io/name" = "kafka"
+#     }
+#     port {
+#       name        = "metrics"
+#       port        = 5556
+#       target_port = 5556
+#     }
+#   }
+# }
 
 
+# # Add the Prometheus Helm chart repository
+# resource "helm_repository" "prometheus_repo" {
+#   name = "prometheus-community"
+#   url  = "https://prometheus-community.github.io/helm-charts"
+# }
+
+# # Prometheus Helm release
+# resource "helm_release" "prometheus" {
+#   name       = "prometheus"
+#   repository = helm_repository.prometheus_repo.url
+#   chart      = "prometheus"
+#   namespace  = "default"
+#   values     = [file("${path.module}/../../monitoring/prometheus/prometheus-values.yaml")]
+#   timeout   = 1200  
+#   depends_on = [helm_repository.prometheus_repo]
+# }
+
+# # Add the Grafana Helm chart repository
+# resource "helm_repository" "grafana_repo" {
+#   name = "grafana"
+#   url  = "https://grafana.github.io/helm-charts"
+# }
+
+# # Grafana Helm release
+# resource "helm_release" "grafana" {
+#   name       = "grafana"
+#   repository = helm_repository.grafana_repo.url
+#   chart      = "grafana"
+#   namespace  = "default"
+#   depends_on = [helm_repository.grafana_repo]
+#   timeout   = 1200  
+
+# }
+
+# # Deploy Prometheus using Helm chart
+# resource "helm_release" "prometheus" {
+#   name       = "prometheus"
+#   repository = "oci://registry-1.docker.io/bitnamicharts"
+#   chart      = "prometheus"
+#   values     = [file("${path.module}/../../monitoring/prometheus/prometheus-values.yaml")]
+#   timeout   = 1200  
+# }
+
+# # Deploy Grafana using Helm chart
+# resource "helm_release" "grafana" {
+#   name       = "grafana"
+#   repository = "oci://registry-1.docker.io/bitnamicharts"
+#   chart      = "grafana"
+#   values     = [file("${path.module}/../../monitoring/grafana/grafana-values.yaml")]
+#   timeout   = 600  
+# }
 
 
 

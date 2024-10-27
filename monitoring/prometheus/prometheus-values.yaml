@@ -1,11 +1,11 @@
-# extraScrapeConfigs:
-# - job_name: 'kafka-jmx'
-#   metrics_path: /metrics
-#   scrape_interval: 15s
-#   static_configs:
-#     - targets: ['kafka.default.svc.cluster.local:5556']
-
-
+# prometheus-values.yaml
+# server:
+#   extraScrapeConfigs:
+#     - job_name: 'kafka-jmx'
+#       metrics_path: /metrics
+#       scrape_interval: 15s
+#       static_configs:
+#         - targets: ['kafka.default.svc.cluster.local:5556']
 
 
 
@@ -17,21 +17,19 @@ server:
   global:
     scrape_interval: 15s
   scrape_configs:
-    - job_name: "kafka-jmx-exporter" # This is the distinct job for Kafka JMX Exporter metrics
+    - job_name: "kafka-jmx-exporter"
       kubernetes_sd_configs:
         - role: pod
       relabel_configs:
         - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_pod_label_app]
           action: keep
-          regex: default;kafka # Matches Kafka pods in the 'default' namespace
+          regex: default;kafka # Assuming 'app' label is 'kafka' and namespace is 'default'
         - source_labels: [__meta_kubernetes_pod_container_port_name]
           action: keep
-          regex: jmx # Matches only the JMX Exporter sidecar port (port 5566)
-        - source_labels: [__meta_kubernetes_pod_name]
-          target_label: instance
+          regex: jmx # Matches container with JMX exporter enabled on port 556
       metrics_path: /metrics
       scheme: http
-      honor_labels: true
+
 
 
 

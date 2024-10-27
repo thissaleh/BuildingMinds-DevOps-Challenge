@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: kafka-jmx-pod-monitor
+  namespace: default
+  labels:
+    release: prometheus-operator
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: metrics
+      app.kubernetes.io/instance: kafka
+      app.kubernetes.io/name: kafka
+  namespaceSelector:
+    matchNames:
+      - default
+  podMetricsEndpoints:
+    - port: "5556"
+      path: /metrics
+      interval: 30s

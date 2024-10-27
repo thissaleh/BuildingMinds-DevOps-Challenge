@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: kafka-jmx-monitor
+  namespace: default
+  labels:
+    release: prometheus-operator
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: metrics
+      app.kubernetes.io/instance: kafka
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: kafka
+      app.kubernetes.io/version: "3.8.0"
+      helm.sh/chart: kafka-30.1.6
+  namespaceSelector:
+    matchNames:
+      - default
+  endpoints:
+    - port: "5556"
+      interval: 30s
+      path: /metrics

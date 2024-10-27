@@ -2,12 +2,12 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: kafka-jmx
-  namespace: default  # or your Kafka namespace
+  namespace: default
 spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: kafka
   endpoints:
-  - port: metrics
-    path: /metrics
-    interval: 15s
+    - port: metrics
+      path: /metrics
+      interval: 15s
