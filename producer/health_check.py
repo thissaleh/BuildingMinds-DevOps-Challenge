@@ -6,7 +6,7 @@ from datetime import datetime
 from kafka import KafkaProducer
 from kubernetes import client, config
 
-## Kafka broker and topic information
+# Kafka broker and topic information
 KAFKA_BROKER = "kafka.default.svc.cluster.local:9092"
 KAFKA_TOPIC = "posts"
 KAFKA_USERNAME = "user1"
