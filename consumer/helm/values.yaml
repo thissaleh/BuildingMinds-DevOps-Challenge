@@ -88,25 +88,33 @@ resources: {}
   #   memory: 128Mi
 
 # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-livenessProbe:
-  exec:
-    command:
-      - python
-      - /app/health_check.py  # Adjust to the correct path if different
-  initialDelaySeconds: 30
-  periodSeconds: 60
-  timeoutSeconds: 30
-  failureThreshold: 10
+# livenessProbe:
+#   exec:
+#     command:
+#       - python
+#       - /app/health_check.py  # Adjust to the correct path if different
+#   initialDelaySeconds: 5
+#   periodSeconds: 30
+#   timeoutSeconds: 5
+#   failureThreshold: 3
 
-readinessProbe:
-  exec:
-    command:
-      - python
-      - /app/health_check.py  # Adjust to the correct path if different
-  initialDelaySeconds: 30
-  periodSeconds: 60
-  timeoutSeconds: 30
-  failureThreshold: 10    
+# readinessProbe:
+#   exec:
+#     command:
+#       - python
+#       - /app/health_check.py  # Adjust to the correct path if different
+#   initialDelaySeconds: 5
+#   periodSeconds: 30
+#   timeoutSeconds: 5
+#   failureThreshold: 3   
+
+# This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80 
 
 # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
 autoscaling:
@@ -134,3 +142,16 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# Environment variables for Kafka configuration
+env:
+  - name: KAFKA_TOPIC
+    value: "posts"
+  - name: KAFKA_BROKER
+    value: "kafka.default.svc.cluster.local:9092"
+  - name: USER_SECRET_NAME
+    value: "kafka-username"
+  - name: PWD_SECRET_NAME
+    value: "kafka-user-passwords"
+  - name: NAMESPACE
+    value: "default"

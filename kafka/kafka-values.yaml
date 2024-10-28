@@ -376,7 +376,7 @@ tls:
   zookeeper:
     ## @param tls.zookeeper.enabled Enable TLS for Zookeeper client connections.
     ##
-    enabled: true
+    enabled: false
     ## @param tls.zookeeper.verifyHostname Hostname validation.
     ##
     verifyHostname: true
@@ -630,15 +630,7 @@ controller:
   ##     cpu: 3
   ##     memory: 1024Mi
   ##
-  # resources:
-  #   limits:
-  #     cpu: 2
-  #     memory: 4Gi
-  #     ephemeral-storage: 2Gi
-  #   requests:
-  #     cpu: 500m
-  #     memory: 512Mi
-  #     ephemeral-storage: 50Mi
+  resources: {}
   ## Kafka pods' Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param controller.podSecurityContext.enabled Enable security context for the pods
@@ -826,7 +818,7 @@ controller:
     vpa:
       ## @param controller.autoscaling.vpa.enabled Enable VPA
       ##
-      enabled: false
+      enabled: true
       ## @param controller.autoscaling.vpa.annotations Annotations for VPA resource
       ##
       annotations: {}
@@ -849,13 +841,13 @@ controller:
     hpa:
       ## @param controller.autoscaling.hpa.enabled Enable HPA for Kafka Controller
       ##
-      enabled: false
+      enabled: true
       ## @param controller.autoscaling.hpa.minReplicas Minimum number of Kafka Controller replicas
       ##
-      minReplicas: 2
+      minReplicas: 3
       ## @param controller.autoscaling.hpa.maxReplicas Maximum number of Kafka Controller replicas
       ##
-      maxReplicas: 3
+      maxReplicas: 5
       ## @param controller.autoscaling.hpa.targetCPU Target CPU utilization percentage
       ##
       targetCPU: 70
@@ -868,10 +860,10 @@ controller:
   ## @param controller.pdb.minAvailable Minimum number/percentage of available Kafka replicas
   ## @param controller.pdb.maxUnavailable Maximum number/percentage of unavailable Kafka replicas
   ##
-  # pdb:
-  #   create: true
-  #   minAvailable: 1
-  #   maxUnavailable: ""
+  pdb:
+    create: true
+    minAvailable: ""
+    maxUnavailable: ""
   ## Enable persistence using Persistent Volume Claims
   ## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
   ##
@@ -1918,7 +1910,7 @@ metrics:
   jmx:
     ## @param metrics.jmx.enabled Whether or not to expose JMX metrics to Prometheus
     ##
-    enabled: false
+    enabled: true
     ## @param metrics.jmx.kafkaJmxPort JMX port where the exporter will collect metrics, exposed in the Kafka container.
     ##
     kafkaJmxPort: 5555
@@ -2117,7 +2109,7 @@ metrics:
 provisioning:
   ## @param provisioning.enabled Enable kafka provisioning Job
   ##
-  enabled: true
+  enabled: false
   ## @param provisioning.automountServiceAccountToken Mount Service Account token in pod
   ##
   automountServiceAccountToken: false
@@ -2138,11 +2130,8 @@ provisioning:
   ##
   topics: 
     - name: "posts"
-      partitions: 1
-      replicationFactor: 1
-    - name: "blogs"
-      partitions: 1
-      replicationFactor: 1
+      partitions: 3
+      replicationFactor: 3
   ## @param provisioning.nodeSelector Node labels for pod assignment
   ## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
   ##
@@ -2421,7 +2410,7 @@ zookeeper:
   enabled: false
   ## @param zookeeper.replicaCount Number of ZooKeeper nodes
   ##
-  replicaCount: 2
+  replicaCount: 1
   ## ZooKeeper authentication
   ##
   auth:

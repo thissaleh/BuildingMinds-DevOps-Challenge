@@ -1,6 +1,6 @@
 # First Stage: Builder - Install dependencies
 # Use build argument for the Python version
-ARG PYTHON_VERSION=3.8-slim
+ARG PYTHON_VERSION=3.8
 FROM python:${PYTHON_VERSION} AS builder
 
 # Set environment variables
@@ -44,4 +44,8 @@ RUN chown -R appuser:appuser /app && chmod -R 755 /app
 USER appuser
 
 # Set the command for the final container
-CMD ["python", "producer.py"]
+
+# CMD ["python", "producer.py"]
+
+# To keep container running for live-testing purpose only
+CMD ["sleep", "infinity"]  

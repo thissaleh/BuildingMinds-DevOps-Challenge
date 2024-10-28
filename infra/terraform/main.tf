@@ -8,29 +8,16 @@ provider "helm" {
   }
 }
 
-variable "registry_server" {
-  type        = string
-  description = "Docker registry server URL"
-  default     = "https://index.docker.io/v1/"
-}
-variable "registry_username" {
-  type        = string
-  description = "Docker registry username"
-  default     = "thissaleh"
-}
-variable "registry_password" {
-  type        = string
-  description = "Docker registry password"
-  sensitive   = true
-  default     = "dckr_pat_UE69JhCUs8O8lllAeg6ELdMnHws"
-}
-variable "registry_email" {
-  type        = string
-  description = "Docker registry email"
-  default     = "thissaleh@gmail.com"
+terraform {
+  required_providers {
+    helm = {
+      source  = "hashicorp/helm"
+      version = "2.16.1"
+    }
+  }
 }
 
-# Docker Hub registry secret for pulling images
+# Docker Hub registry secret 
 resource "kubernetes_secret" "dockerhub_secret" {
   metadata {
     name      = "my-dockerhub-secret"
@@ -50,6 +37,7 @@ resource "kubernetes_secret" "dockerhub_secret" {
   }
 }
 
+# Kafka Client
 resource "kubernetes_pod" "kafka_client" {
   metadata {
     name      = "kafka-client"
@@ -60,13 +48,11 @@ resource "kubernetes_pod" "kafka_client" {
   }
   spec {
     restart_policy = "Never"
-
     container {
       name  = "kafka-client"
       image = "docker.io/bitnami/kafka:3.8.0-debian-12-r5"
 
       command = ["sleep", "infinity"]
-
       resources {
         limits = {
           memory = "512Mi"
@@ -77,6 +63,7 @@ resource "kubernetes_pod" "kafka_client" {
   }
 }
 
+# Kafka
 resource "helm_release" "kafka" {
   name       = "kafka"
   repository = "oci://registry-1.docker.io/bitnamicharts"
@@ -86,6 +73,7 @@ resource "helm_release" "kafka" {
 
  }
 
+# Kafka Producer
 resource "helm_release" "kafka_producer" {
   name       = "kafka-producer"
   chart      = "${path.module}/../../producer/helm"
@@ -94,15 +82,16 @@ resource "helm_release" "kafka_producer" {
   timeout   = 600 
 }
 
+# Kafka Consumer
 resource "helm_release" "kafka_consumer" {
   name       = "kafka-consumer"
-  #namespace  = kubernetes_namespace.kafka_ns.metadata[0].name
   chart      = "${path.module}/../../consumer/helm"
   values = [file("${path.module}/../../consumer/helm/values.yaml")]
   force_update = true
   timeout   = 600  
 }
 
+# Kafka Secret Role
 resource "kubernetes_role" "kafka_secret_role" {
   metadata {
     name      = "kafka-secret-role"
@@ -115,6 +104,7 @@ resource "kubernetes_role" "kafka_secret_role" {
   }
 }
 
+# Kafka Secret RoleBinding
 resource "kubernetes_role_binding" "kafka_secret_role_binding" {
   metadata {
     name      = "kafka-secret-role-binding"
@@ -132,103 +122,57 @@ resource "kubernetes_role_binding" "kafka_secret_role_binding" {
   }
 }
 
-# resource "kubernetes_manifest" "kafka_jmx_service_monitor" {
-#   manifest = {
-#     "apiVersion" = "monitoring.coreos.com/v1"
-#     "kind"       = "ServiceMonitor"
-#     "metadata" = {
-#       "name"      = "kafka-jmx"
-#       "namespace" = "default"
-#     }
-#     "spec" = {
-#       "selector" = {
-#         "matchLabels" = {
-#           "app.kubernetes.io/name" = "kafka"
-#         }
-#       }
-#       "endpoints" = [
-#         {
-#           "port"     = "metrics"
-#           "path"     = "/metrics"
-#           "interval" = "15s"
-#         }
-#       ]
-#     }
-#   }
-# }
+# kafka Auth User Name
+resource "kubernetes_secret" "kafka_username" {
+  metadata {
+     name      = "kafka-username"
+     namespace = "default"
+  }
+  data = {
+    username = var.kafka_username
+  }
+  type = "kubernetes.io/basic-auth"
+}
 
-# resource "kubernetes_service" "kafka_jmx_metrics" {
-#   metadata {
-#     name      = "kafka-jmx-metrics"
-#     namespace = "default"  # Ensure this matches your Kafka namespace
-#     labels = {
-#       "app.kubernetes.io/name" = "kafka"
-#     }
-#   }
-#   spec {
-#     selector = {
-#       "app.kubernetes.io/name" = "kafka"
-#     }
-#     port {
-#       name        = "metrics"
-#       port        = 5556
-#       target_port = 5556
-#     }
-#   }
-# }
+# CRD YAML file
+data "http" "servicemonitor_crd" {
+  url = "https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/example/prometheus-operator-crd/monitoring.coreos.com_servicemonitors.yaml"
+}
+resource "local_file" "servicemonitor_crd" {
+  content  = data.http.servicemonitor_crd.response_body
+  filename = "${path.module}/servicemonitor-crd.yaml"
+}
 
+# Apply the YAML file 
+resource "null_resource" "apply_servicemonitor_crd" {
+  provisioner "local-exec" {
+    command = "kubectl apply -f ${local_file.servicemonitor_crd.filename} && sleep 10"
+  }
+  # Ensures the file is created before applying
+  depends_on = [local_file.servicemonitor_crd]
+}
 
-# # Add the Prometheus Helm chart repository
-# resource "helm_repository" "prometheus_repo" {
-#   name = "prometheus-community"
-#   url  = "https://prometheus-community.github.io/helm-charts"
-# }
+# Prometheus Helm release
+resource "helm_release" "prometheus" {
+  name       = "prometheus"
+  repository = "https://prometheus-community.github.io/helm-charts"  
+  chart      = "prometheus"                                         
+  namespace  = "default"
+  values     = [file("${path.module}/../../monitoring/prometheus/prometheus-values.yaml")]
+  timeout    = 1200
 
-# # Prometheus Helm release
-# resource "helm_release" "prometheus" {
-#   name       = "prometheus"
-#   repository = helm_repository.prometheus_repo.url
-#   chart      = "prometheus"
-#   namespace  = "default"
-#   values     = [file("${path.module}/../../monitoring/prometheus/prometheus-values.yaml")]
-#   timeout   = 1200  
-#   depends_on = [helm_repository.prometheus_repo]
-# }
+}
 
-# # Add the Grafana Helm chart repository
-# resource "helm_repository" "grafana_repo" {
-#   name = "grafana"
-#   url  = "https://grafana.github.io/helm-charts"
-# }
-
-# # Grafana Helm release
-# resource "helm_release" "grafana" {
-#   name       = "grafana"
-#   repository = helm_repository.grafana_repo.url
-#   chart      = "grafana"
-#   namespace  = "default"
-#   depends_on = [helm_repository.grafana_repo]
-#   timeout   = 1200  
-
-# }
-
-# # Deploy Prometheus using Helm chart
-# resource "helm_release" "prometheus" {
-#   name       = "prometheus"
-#   repository = "oci://registry-1.docker.io/bitnamicharts"
-#   chart      = "prometheus"
-#   values     = [file("${path.module}/../../monitoring/prometheus/prometheus-values.yaml")]
-#   timeout   = 1200  
-# }
-
-# # Deploy Grafana using Helm chart
-# resource "helm_release" "grafana" {
-#   name       = "grafana"
-#   repository = "oci://registry-1.docker.io/bitnamicharts"
-#   chart      = "grafana"
-#   values     = [file("${path.module}/../../monitoring/grafana/grafana-values.yaml")]
-#   timeout   = 600  
-# }
+# Deploy Grafana using Helm chart
+resource "helm_release" "grafana" {
+  name       = "grafana"
+  repository = "https://grafana.github.io/helm-charts"
+  chart      = "grafana"
+  #values     = [file("${path.module}/../../monitoring/grafana/grafana-values.yaml")]
+  namespace  = "default"
+  timeout   = 600  
+  depends_on = [helm_release.prometheus]
+}
 
 
 
