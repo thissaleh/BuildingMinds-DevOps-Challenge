@@ -168,7 +168,7 @@ resource "helm_release" "grafana" {
   name       = "grafana"
   repository = "https://grafana.github.io/helm-charts"
   chart      = "grafana"
-  #values     = [file("${path.module}/../../monitoring/grafana/grafana-values.yaml")]
+  values     = [file("${path.module}/../../monitoring/grafana/grafana-values.yaml")]
   namespace  = "default"
   timeout   = 600  
   depends_on = [helm_release.prometheus]

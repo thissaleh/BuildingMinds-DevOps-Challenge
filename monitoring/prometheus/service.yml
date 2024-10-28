@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kafka-jmx-metrics
-  namespace: default  # Ensure this matches your Kafka namespace
+  namespace: default  
   labels:
     app.kubernetes.io/name: kafka
 spec:
